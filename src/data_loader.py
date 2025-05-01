@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def load_data(path: str) -> pd.DataFrame:
     """
     Loads a CSV file into a pandas DataFrame.

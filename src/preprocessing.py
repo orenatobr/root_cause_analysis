@@ -1,5 +1,6 @@
-from sklearn.preprocessing import LabelEncoder
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+
 
 def preprocess_data(df: pd.DataFrame):
     """
@@ -42,7 +43,11 @@ def preprocess_data(df: pd.DataFrame):
     df["target"] = label_encoder.fit_transform(df["issue_found"])
 
     # Select feature columns
-    feature_cols = [col for col in df.columns if col.startswith("value_") or col.startswith("error_")]
+    feature_cols = [
+        col
+        for col in df.columns
+        if col.startswith("value_") or col.startswith("error_")
+    ]
     X = df[feature_cols]
     y = df["target"]
 

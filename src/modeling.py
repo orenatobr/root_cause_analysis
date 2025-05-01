@@ -1,6 +1,7 @@
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
+
 def train_decision_tree(X_train, y_train):
     """
     Trains a Decision Tree classifier on the provided training data.
@@ -40,6 +41,6 @@ def train_xgboost(X_train, y_train):
     model : XGBClassifier
         A fitted XGBoost model with multi-class log-loss as evaluation metric.
     """
-    model = XGBClassifier(eval_metric='mlogloss', random_state=42)
+    model = XGBClassifier(eval_metric="mlogloss", random_state=42)
     model.fit(X_train, y_train)
     return model

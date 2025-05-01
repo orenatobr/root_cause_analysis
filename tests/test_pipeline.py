@@ -1,12 +1,15 @@
 import matplotlib
-matplotlib.use("Agg")
 import pandas as pd
-from src.preprocessing import preprocess_data
-from src.modeling import train_decision_tree
+
 from src.evaluation import evaluate_model
+from src.modeling import train_decision_tree
+from src.preprocessing import preprocess_data
+
+matplotlib.use("Agg")
+
 
 def test_model_pipeline():
-    df = pd.read_csv('data/root_cause.csv')
+    df = pd.read_csv("data/root_cause.csv")
     X, y, le = preprocess_data(df)
 
     # Split (very basic)
