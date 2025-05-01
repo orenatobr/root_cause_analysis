@@ -1,21 +1,20 @@
-
 # Root Cause Analysis – OutSystems Challenge
 
-Este projeto resolve o desafio de análise de causa-raiz proposto pela OutSystems para a posição de Senior AI Engineer.
+This project addresses the root cause analysis challenge proposed by OutSystems for the Senior AI Engineer position.
 
-## Objetivos
+## Objectives
 
-- Identificar combinações de erros e parâmetros do sistema que levam a falhas.
-- Treinar modelos para prever a causa provável de uma falha.
-- Fornecer interpretabilidade para auxiliar em ações preventivas.
+- Identify combinations of system errors and parameters that lead to failures.
+- Train models to predict the likely cause of a failure.
+- Provide interpretability to support preventive actions.
 
-## Estrutura
+## Project Structure
 
 ```
 root_cause_analysis/
-├── data/                    # Dados fornecidos
+├── data/                    # Provided dataset
 ├── notebooks/
-│   └── eda_and_modeling.ipynb  # Análise exploratória e modelagem
+│   └── eda_and_modeling.ipynb  # Exploratory analysis and modeling
 ├── src/
 │   ├── data_loader.py
 │   ├── preprocessing.py
@@ -26,31 +25,31 @@ root_cause_analysis/
 └── pyproject.toml
 ```
 
-## Como usar
+## How to Use
 
-1. Instale as dependências com Poetry:
+1. Install dependencies using Poetry:
 
 ```bash
-poetry install
+poetry install --no-root
 ```
 
-2. Execute o notebook:
+2. Run the notebook:
 
 ```bash
 jupyter notebook notebooks/eda_and_modeling.ipynb
 ```
 
-## Modelos
+## Models
 
-Foram comparados:
-- Árvores de Decisão (simples e interpretável)
+The following models were compared:
+- Decision Tree (simple and interpretable)
 - Random Forest
-- XGBoost com explicabilidade via SHAP
+- XGBoost with SHAP-based interpretability
 
-## Dependências
+## Dependencies
 
-Veja `pyproject.toml`.
+See `pyproject.toml` for details.
 
-## Autor
+## Author
 
-Desenvolvido como parte do processo seletivo para a vaga de Senior AI Engineer na OutSystems.
+Developed as part of the selection process for the Senior AI Engineer role at OutSystems.
