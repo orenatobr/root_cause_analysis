@@ -24,21 +24,18 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'poetry'
 
-      - name: 📦 Install Poetry via pipx
-        run: |
-          pip install pipx
-          pipx install poetry
+      - name: 📦 Install Poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.8.2
 
       - name: 📜 Install dependencies
-        run: |
-          poetry install
+        run: poetry install
 
       - name: ✅ Run pre-commit hooks
-        run: |
-          poetry run pre-commit run --all-files
+        run: poetry run pre-commit run --all-files
 
       - name: 🧪 Run tests with pytest
         env:
           PYTHONPATH: .
-        run: |
-          poetry run pytest
+        run: poetry run pytest
