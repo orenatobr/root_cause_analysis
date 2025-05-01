@@ -1,0 +1,27 @@
+
+[tool.poetry]
+name = "root_cause_analysis"
+version = "0.1.0"
+description = "Root cause analysis challenge for OutSystems"
+authors = ["Candidate"]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+pandas = "^2.0.0"
+numpy = "1.26.4"
+scikit-learn = "^1.3.0"
+matplotlib = "^3.7.0"
+seaborn = "^0.13.0"
+xgboost = "^2.1.4"
+shap = "^0.43.0"
+jupyter = "^1.0.0"
+ydata-profiling = "^4.6.1"
+ipython = "^8.20.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.2.0"
+pytest = "^8.3.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
