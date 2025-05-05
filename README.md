@@ -43,7 +43,6 @@ jupyter notebook notebooks/eda_and_modeling.ipynb
 
 The following models were compared:
 - Decision Tree (simple and interpretable)
-- Random Forest
 - XGBoost with SHAP-based interpretability
 
 ## Dependencies

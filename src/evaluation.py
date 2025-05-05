@@ -53,7 +53,7 @@ def evaluate_model(model, X_test, y_test, label_encoder):
 
     cm = confusion_matrix(y_test, y_pred)
 
-    # Plot com matplotlib puro
+    # Plot with pure matplotlib
     fig, ax = plt.subplots(figsize=(10, 5.625))
     im = ax.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
     ax.set_title("Confusion Matrix")
@@ -69,7 +69,7 @@ def evaluate_model(model, X_test, y_test, label_encoder):
     )
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
 
-    # Números visíveis manualmente
+    # Munual visible numbers
     thresh = cm.max() / 2.0
     for i in range(cm.shape[0]):
         for j in range(cm.shape[1]):
