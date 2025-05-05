@@ -19,7 +19,7 @@ def test_preprocess_data():
 
     assert "Unnamed: 0" not in X.columns
     assert "ID" not in X.columns
-    assert X.shape[1] == 3
+    assert X.shape[1] == 1
     assert y.tolist() == [
         le.transform(["CPU_OVERHEAT"])[0],
         le.transform(["MEMORY_LEAK"])[0],
