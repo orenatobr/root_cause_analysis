@@ -12,7 +12,7 @@ def test_preprocess_data():
             "value_2": [0.1, 0.2],
             "error_1": [0, 1],
             "issue_found": ["CPU_OVERHEAT", "MEMORY_LEAK"],
-        }
+        },
     )
     X, y, le = preprocess_data(data)
     print(X.shape)

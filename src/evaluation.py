@@ -1,13 +1,16 @@
 import logging
 
+import joblib
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.stats import wilcoxon
 from sklearn.metrics import (
     classification_report,
     confusion_matrix,
     roc_auc_score,
     roc_curve,
 )
+from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import label_binarize
 
 logging.basicConfig(level=logging.INFO)
@@ -45,7 +48,7 @@ def evaluate_model(model, X_test, y_test, label_encoder):
     y_pred = model.predict(X_test)
     logging.info(
         "\n"
-        + classification_report(y_test, y_pred, target_names=label_encoder.classes_)
+        + classification_report(y_test, y_pred, target_names=label_encoder.classes_),
     )
 
     cm = confusion_matrix(y_test, y_pred)
@@ -87,10 +90,16 @@ def evaluate_model(model, X_test, y_test, label_encoder):
     if hasattr(model, "predict_proba"):
         y_score = model.predict_proba(X_test)
         roc_auc_macro = roc_auc_score(
-            y_test_bin, y_score, average="macro", multi_class="ovr"
+            y_test_bin,
+            y_score,
+            average="macro",
+            multi_class="ovr",
         )
         roc_auc_micro = roc_auc_score(
-            y_test_bin, y_score, average="micro", multi_class="ovr"
+            y_test_bin,
+            y_score,
+            average="micro",
+            multi_class="ovr",
         )
 
         logging.info(f"ROC AUC (macro-average): {roc_auc_macro:.4f}")
@@ -116,5 +125,54 @@ def evaluate_model(model, X_test, y_test, label_encoder):
         plt.show()
     else:
         logging.warning(
-            "Model does not support probability estimates; ROC AUC not available."
+            "Model does not support probability estimates; ROC AUC not available.",
         )
+
+
+def compare_models_statistically(
+    models: dict,
+    X,
+    y,
+    scoring="f1_weighted",
+    save_path="best_model.pkl",
+):
+    """
+    Compares models using Wilcoxon signed-rank test and saves the best model.
+
+    Parameters:
+    -----------
+    models : dict
+        Dictionary of {model_name: model_instance} with sklearn interface.
+    X : pd.DataFrame or np.ndarray
+        Features.
+    y : array-like
+        Target variable.
+    scoring : str
+        Scoring metric to use.
+    save_path : str
+        Filepath to save the best model (pickle).
+
+    Returns:
+    --------
+    str
+        Name of the best model.
+    """
+    scores = {}
+    for name, model in models.items():
+        score = cross_val_score(model, X, y, cv=5, scoring=scoring)
+        scores[name] = score
+        logging.info(f"{name} CV scores: {score} | Mean: {np.mean(score):.4f}")
+
+    model_names = list(scores.keys())
+    _, p_value = wilcoxon(scores[model_names[0]], scores[model_names[1]])
+    logging.info(f"Wilcoxon test p-value: {p_value:.4f}")
+
+    # Select best model based on mean score (with or without significance)
+    means = {k: np.mean(v) for k, v in scores.items()}
+    best_model_name = max(means, key=means.get)
+    best_model = models[best_model_name].fit(X, y)
+
+    joblib.dump(best_model, save_path)
+    logging.info(f"✅ Saved best model '{best_model_name}' to {save_path}")
+
+    return best_model_name

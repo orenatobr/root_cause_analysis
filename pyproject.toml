@@ -17,6 +17,7 @@ shap = "^0.43.0"
 jupyter = "^1.0.0"
 ydata-profiling = "^4.6.1"
 ipython = "^8.20.0"
+imblearn = "^0.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
