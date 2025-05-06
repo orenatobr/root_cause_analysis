@@ -25,6 +25,11 @@ uvicorn = "^0.34.2"
 pre-commit = "^4.2.0"
 pytest = "^8.3.5"
 
+[tool.nbqa.config]
+black = {}
+isort = {}
+flake8 = {}
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
