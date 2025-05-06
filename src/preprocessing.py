@@ -1,3 +1,6 @@
+import pickle
+import time
+
 import numpy as np
 import pandas as pd
 from imblearn.over_sampling import SMOTE
@@ -8,6 +11,7 @@ def preprocess_data(
     df: pd.DataFrame,
     remove_corr: bool = True,
     apply_sampling: bool = False,
+    save_path=f"outputs/encoders/{int(time.time())}_label_encoder.pkl",
 ):
     """
     Preprocesses the input DataFrame for machine learning.
@@ -53,6 +57,8 @@ def preprocess_data(
     # Encode target
     label_encoder = LabelEncoder()
     df["target"] = label_encoder.fit_transform(df["issue_found"])
+    with open(save_path, "wb") as f:
+        pickle.dump(label_encoder, f)
 
     # Select features
     feature_cols = [

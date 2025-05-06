@@ -18,6 +18,8 @@ jupyter = "^1.0.0"
 ydata-profiling = "^4.6.1"
 ipython = "^8.20.0"
 imblearn = "^0.0"
+fastapi = "^0.115.12"
+uvicorn = "^0.34.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"

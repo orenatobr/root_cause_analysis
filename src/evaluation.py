@@ -1,4 +1,5 @@
 import logging
+import time
 
 import joblib
 import matplotlib.pyplot as plt
@@ -134,7 +135,7 @@ def compare_models_statistically(
     X,
     y,
     scoring="f1_weighted",
-    save_path="best_model.pkl",
+    save_path=f"outputs/models/{int(time.time())}_model.pkl",
 ):
     """
     Compares models using Wilcoxon signed-rank test and saves the best model.

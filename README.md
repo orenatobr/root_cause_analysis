@@ -18,6 +18,7 @@ root_cause_analysis/
 ├── src/
 │   ├── data_loader.py
 │   ├── preprocessing.py
+│   ├── main.py
 │   ├── modeling.py
 │   ├── evaluation.py
 │   └── utils.py
@@ -52,3 +53,44 @@ See `pyproject.toml` for details.
 ## Author
 
 Developed as part of the selection process for the Senior AI Engineer role at OutSystems.
+
+
+## CLI Usage with Poetry (Training, Inference API, Testing)
+
+To run the project via command line, you can set the environment variable `STEP` to define the pipeline stage.
+
+### 🚀 1. Train the models
+
+```bash
+STEP=training poetry run python src/main.py
+```
+
+This step will:
+- Load and preprocess the dataset
+- Train Decision Tree and XGBoost models
+- Evaluate and compare using cross-validation + Wilcoxon test
+- Save the best model to `outputs/models/` and label encoder to `outputs/encoders/`
+
+---
+
+### 🌐 2. Run the Inference API
+
+```bash
+STEP=inference poetry run python src/main.py
+```
+
+This will:
+- Load the latest model and label encoder
+- Start a FastAPI server at `http://localhost:8080/predict`
+
+You can send POST requests with feature values to receive predictions.
+
+---
+
+### 🧪 3. Test the inference endpoint
+
+```bash
+STEP=test poetry run python src/main.py
+```
+
+This sends a sample request to the running FastAPI server and prints the prediction result and confidence score.
