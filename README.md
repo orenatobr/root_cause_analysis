@@ -31,10 +31,12 @@ root_cause_analysis/
 1. Install dependencies using Poetry:
 
 ```bash
-poetry install --no-root
+poetry install
 ```
 
-2. Run the notebook:
+2. Add file `root_cause.csv` to data folder
+
+3. Run the notebook:
 
 ```bash
 jupyter notebook notebooks/eda_and_modeling.ipynb

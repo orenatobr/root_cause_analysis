@@ -4,6 +4,9 @@ name = "root_cause_analysis"
 version = "0.1.0"
 description = "Root cause analysis challenge for OutSystems"
 authors = ["Candidate"]
+packages = [
+    { include = "src", from = "." }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
