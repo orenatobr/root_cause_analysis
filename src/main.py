@@ -21,29 +21,35 @@ from utils import suggest_action
 # ==============================
 # Configuration
 # ==============================
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
 matplotlib.use("Agg")
 warnings.filterwarnings("ignore", message="FigureCanvasAgg is non-interactive")
 
 app = FastAPI(title="Root Cause Analysis Inference API")
+
+# Load data and preprocess for reuse
+DATA_PATH = Path("data/root_cause.csv")
+df = load_data(DATA_PATH)
+X, y, label_encoder = preprocess_data(df, remove_corr=False, apply_sampling=False)
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    stratify=y,
+    test_size=0.2,
+    random_state=42,
+)
 
 
 # ==============================
 # Core Functions
 # ==============================
 def training():
-    """Executes the training pipeline."""
-    data_path = Path("data/root_cause.csv")
-    df = load_data(data_path)
-    X, y, label_encoder = preprocess_data(df, remove_corr=False, apply_sampling=False)
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        stratify=y,
-        test_size=0.2,
-        random_state=42,
-    )
-
+    """
+    Run the training pipeline: train both models, evaluate, compare, and save the best one.
+    """
     dt_model = train_decision_tree(X_train, y_train)
     xgb_model = train_xgboost(X_train, y_train)
 
@@ -55,20 +61,22 @@ def training():
 
 
 def test_inference_endpoint():
-    """Sends a sample payload to the inference endpoint for testing."""
+    """
+    Send a test payload to the local inference endpoint.
+    """
     url = "http://localhost:8080/predict"
     payload = {
-        "value_1": 2.033852,
-        "value_2": 0.860043,
-        "value_3": 0.839214,
-        "value_4": 0.876370,
-        "error_1": 1,
+        "value_1": -0.19,
+        "value_2": 354.8,
+        "value_3": 1.2,
+        "value_4": 535.0,
+        "error_1": 0,
         "error_2": 0,
-        "error_3": 1,
+        "error_3": 0,
         "error_4": 0,
         "error_5": 0,
         "error_6": 0,
-        "error_7": 1,
+        "error_7": 0,
     }
     response = requests.post(url, json=payload)
 
@@ -81,7 +89,9 @@ def test_inference_endpoint():
 
 
 def get_latest_file(folder_path):
-    """Returns the most recently modified file in a folder."""
+    """
+    Get the most recently modified file in a directory.
+    """
     files = [
         os.path.join(folder_path, f)
         for f in os.listdir(folder_path)
@@ -90,8 +100,38 @@ def get_latest_file(folder_path):
     return max(files, key=os.path.getmtime) if files else None
 
 
+def is_input_valid(df_input, df_reference, tolerance=0.1):
+    """
+    Check if input values are within the range of training data with a margin.
+
+    Parameters:
+    -----------
+    df_input : pd.DataFrame
+        The input data to check.
+    df_reference : pd.DataFrame
+        The reference data (e.g., X_train) to compare against.
+    tolerance : float
+        Percentual margin allowed (default is 10%).
+
+    Returns:
+    --------
+    bool
+        True if all values are within range, False otherwise.
+    """
+    for col in df_reference.columns:
+        min_val = df_reference[col].min()
+        max_val = df_reference[col].max()
+        margin = (max_val - min_val) * tolerance
+        if not df_input[col].between(min_val - margin, max_val + margin).all():
+            logging.warning(
+                f"Input value for {col} is out of range: {df_input[col].values}",
+            )
+            return False
+    return True
+
+
 # ==============================
-# Inference API Setup
+# Inference API
 # ==============================
 class InputData(BaseModel):
     value_1: float
@@ -109,7 +149,9 @@ class InputData(BaseModel):
 
 @app.post("/predict")
 def predict(data: InputData):
-    """Returns predicted label and confidence for input payload."""
+    """
+    Predicts the root cause and returns label, confidence, and suggested action.
+    """
     try:
         model = joblib.load(get_latest_file("outputs/models"))
         label_encoder = joblib.load(get_latest_file("outputs/encoders"))
@@ -120,18 +162,24 @@ def predict(data: InputData):
             expected_columns = model.feature_names_in_
 
         df = pd.DataFrame([data.model_dump()])
+        proba = model.predict_proba(df[expected_columns])
         pred = model.predict(df[expected_columns])[0]
+        max_conf = proba.max()
         label = label_encoder.inverse_transform([pred])[0]
         action = suggest_action(pred, label_encoder)
-        proba = model.predict_proba(df[expected_columns]).max()
+
+        if max_conf < 0.6 or not is_input_valid(df, X_train):
+            label = "UNKNOWN"
+            action = "UNKNOWN"
 
         return {
             "predicted_label": label,
-            "confidence": round(float(proba), 4),
+            "confidence": round(float(max_conf), 4),
             "action": action,
         }
 
     except Exception as e:
+        logging.exception("Inference error:")
         raise HTTPException(status_code=500, detail=str(e))
 
 
